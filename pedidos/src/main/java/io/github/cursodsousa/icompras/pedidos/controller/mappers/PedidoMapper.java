@@ -4,7 +4,7 @@ import io.github.cursodsousa.icompras.pedidos.controller.dto.ItemPedidoDTO;
 import io.github.cursodsousa.icompras.pedidos.controller.dto.NovoPedidoDTO;
 import io.github.cursodsousa.icompras.pedidos.model.ItemPedido;
 import io.github.cursodsousa.icompras.pedidos.model.Pedido;
-import io.github.cursodsousa.icompras.pedidos.model.StatusPedido;
+import io.github.cursodsousa.icompras.pedidos.model.enums.StatusPedido;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
