@@ -1,7 +1,15 @@
 package io.github.cursodsousa.icompras.pedidos.model;
 
-import io.github.cursodsousa.icompras.pedidos.controller.dto.DadosPagamentoDTO;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -47,9 +55,9 @@ public class Pedido {
     private String urlNf;
 
     @Transient
-    private DadosPagamentoDTO dadosPagamentoDTO;
+    private DadosPagamento dadosPagamento;
 
-    @OneToMany(mappedBy = "codigoPedido")
+    @OneToMany(mappedBy = "pedido")
     private List<ItemPedido> itemPedidoList;
 
 }
