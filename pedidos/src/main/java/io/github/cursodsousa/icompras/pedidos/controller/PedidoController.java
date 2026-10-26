@@ -5,6 +5,7 @@ import io.github.cursodsousa.icompras.pedidos.controller.mappers.PedidoMapper;
 import io.github.cursodsousa.icompras.pedidos.service.PedidoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,8 +18,9 @@ public class PedidoController {
     private final PedidoService pedidoService;
     private final PedidoMapper pedidoMapper;
 
+    @PostMapping
     public ResponseEntity<Object> create (@RequestBody NovoPedidoDTO novoPedidoDTO){
-        var pedido = pedidoMapper.map(novoPedidoDTO);
+        var pedido = pedidoMapper.mapPedido(novoPedidoDTO);
         var novoPedido = pedidoService.create(pedido);
         return ResponseEntity.ok(novoPedido.getCodigo());
     }
