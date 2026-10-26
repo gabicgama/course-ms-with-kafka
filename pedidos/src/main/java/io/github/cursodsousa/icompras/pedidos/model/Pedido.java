@@ -1,5 +1,6 @@
 package io.github.cursodsousa.icompras.pedidos.model;
 
+import io.github.cursodsousa.icompras.pedidos.model.enums.StatusPedido;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
