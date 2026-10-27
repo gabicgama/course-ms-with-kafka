@@ -1,5 +1,6 @@
 package io.github.cursodsousa.icompras.pedidos.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,6 +21,7 @@ public class ItemPedido {
 
     @JoinColumn(name = "codigo_pedido")
     @ManyToOne
+    @JsonIgnore //evita recursao na serialização do json ignorando o campo totalmente
     private Pedido pedido;
 
     @Column(name = "codigo_produto", nullable = false)
