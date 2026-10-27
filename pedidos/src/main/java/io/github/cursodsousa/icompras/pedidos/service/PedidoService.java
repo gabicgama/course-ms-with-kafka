@@ -2,16 +2,21 @@ package io.github.cursodsousa.icompras.pedidos.service;
 
 import io.github.cursodsousa.icompras.pedidos.client.ServicoBancarioClient;
 import io.github.cursodsousa.icompras.pedidos.model.Pedido;
+import io.github.cursodsousa.icompras.pedidos.model.enums.StatusPedido;
 import io.github.cursodsousa.icompras.pedidos.repository.ItemPedidoRepository;
 import io.github.cursodsousa.icompras.pedidos.repository.PedidoRepository;
 import io.github.cursodsousa.icompras.pedidos.validator.PedidoValidator;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.net.jsse.PEMFile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PedidoService {
 
     private final PedidoRepository pedidoRepository;
@@ -36,5 +41,31 @@ public class PedidoService {
     private void enviarSolicitacaoPagamento(Pedido pedido) {
         var chavePagamento = servicoBancarioClient.solicitarPagamento(pedido);
         pedido.setChavePagamento(chavePagamento);
+    }
+
+    public void atualizarStatusPagamento(Long codigo, String chavePagamento, boolean status, String observacoes) {
+
+        var pedidoEncontrado = pedidoRepository.findByCodigoAndChavePagamento(codigo, chavePagamento);
+
+        if (pedidoEncontrado.isEmpty()) {
+            var msg = String.format("Pedido não encontrado para o código %d e chave pgmto %s", codigo, chavePagamento);
+            log.error(msg);
+            return;
+        }
+
+        Pedido pedido = pedidoEncontrado.get();
+
+        if (status) {
+            pedido.setStatus(StatusPedido.PAGO);
+        } else {
+            pedido.setStatus(StatusPedido.ERRO_PAGAMENTO);
+            pedido.setObservacoes(observacoes);
+        }
+
+        pedidoRepository.save(pedido);
+    }
+
+    public Optional<Pedido> findById(Long codigo) {
+        return pedidoRepository.findById(codigo);
     }
 }
