@@ -1,7 +1,9 @@
 package io.github.cursodsousa.icompras.pedidos.controller;
 
+import io.github.cursodsousa.icompras.pedidos.controller.dto.AdicaoNovoPagamentoDTO;
 import io.github.cursodsousa.icompras.pedidos.controller.dto.NovoPedidoDTO;
 import io.github.cursodsousa.icompras.pedidos.controller.mappers.PedidoMapper;
+import io.github.cursodsousa.icompras.pedidos.exceptions.ItemNaoEncontradoException;
 import io.github.cursodsousa.icompras.pedidos.exceptions.ValidatorException;
 import io.github.cursodsousa.icompras.pedidos.model.ErroResposta;
 import io.github.cursodsousa.icompras.pedidos.model.Pedido;
@@ -33,8 +35,19 @@ public class PedidoController {
     }
 
     @GetMapping("/{codigo}")
-    public ResponseEntity<Optional<Pedido>> getPedido(@PathVariable("codigo") Long codigo){
+    public ResponseEntity<Optional<Pedido>> getPedido(@PathVariable("codigo") Long codigo) {
         Optional<Pedido> pedido = pedidoService.findById(codigo);
         return ResponseEntity.ok().body(pedido);
+    }
+
+    @PostMapping("/pagamentos")
+    public ResponseEntity<Object> adicionarNovoPagamento(@RequestBody AdicaoNovoPagamentoDTO dto) {
+        try {
+            pedidoService.adicionarNovoPagamento(dto.codigoPedido(), dto.dados(), dto.tipoPagamento());
+            return ResponseEntity.noContent().build();
+        } catch (ItemNaoEncontradoException e) {
+            var erro = new ErroResposta("Item não encontrado", "codigoPedido", e.getMessage());
+            return ResponseEntity.badRequest().body(erro);
+        }
     }
 }
