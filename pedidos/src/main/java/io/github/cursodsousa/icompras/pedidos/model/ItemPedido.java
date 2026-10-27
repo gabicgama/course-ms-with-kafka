@@ -21,7 +21,7 @@ public class ItemPedido {
 
     @JoinColumn(name = "codigo_pedido")
     @ManyToOne
-    @JsonIgnore //evita recursao na serialização do json ignorando o campo totalmente
+    //@JsonIgnore //evita recursao na serialização do json ignorando o campo totalmente
     private Pedido pedido;
 
     @Column(name = "codigo_produto", nullable = false)
@@ -32,5 +32,8 @@ public class ItemPedido {
 
     @Column(name = "valor_unitario", nullable = false, precision = 16, scale = 2)
     private BigDecimal valorUnitario;
+
+    @Transient
+    private String nome;
 
 }

@@ -1,5 +1,6 @@
 package io.github.cursodsousa.icompras.pedidos.model;
 
+import io.github.cursodsousa.icompras.pedidos.client.representation.ClienteRepresentation;
 import io.github.cursodsousa.icompras.pedidos.model.enums.StatusPedido;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -60,5 +61,8 @@ public class Pedido {
 
     @OneToMany(mappedBy = "pedido")
     private List<ItemPedido> itemPedidoList;
+
+    @Transient
+    private ClienteRepresentation clienteRepresentation;
 
 }

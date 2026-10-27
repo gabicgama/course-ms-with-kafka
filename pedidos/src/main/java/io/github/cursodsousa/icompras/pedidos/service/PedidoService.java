@@ -1,20 +1,24 @@
 package io.github.cursodsousa.icompras.pedidos.service;
 
+import io.github.cursodsousa.icompras.pedidos.client.ClienteClient;
+import io.github.cursodsousa.icompras.pedidos.client.ProdutosClient;
 import io.github.cursodsousa.icompras.pedidos.client.ServicoBancarioClient;
 import io.github.cursodsousa.icompras.pedidos.exceptions.ItemNaoEncontradoException;
 import io.github.cursodsousa.icompras.pedidos.model.DadosPagamento;
+import io.github.cursodsousa.icompras.pedidos.model.ItemPedido;
 import io.github.cursodsousa.icompras.pedidos.model.Pedido;
 import io.github.cursodsousa.icompras.pedidos.model.enums.StatusPedido;
 import io.github.cursodsousa.icompras.pedidos.model.enums.TipoPagamento;
+import io.github.cursodsousa.icompras.pedidos.publisher.PagamentoPublisher;
 import io.github.cursodsousa.icompras.pedidos.repository.ItemPedidoRepository;
 import io.github.cursodsousa.icompras.pedidos.repository.PedidoRepository;
 import io.github.cursodsousa.icompras.pedidos.validator.PedidoValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.net.jsse.PEMFile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -27,6 +31,11 @@ public class PedidoService {
 
     private final PedidoValidator pedidoValidator;
     private final ServicoBancarioClient servicoBancarioClient;
+
+    private final ClienteClient apiClientes;
+    private final ProdutosClient apiProdutos;
+
+    private final PagamentoPublisher pagamentoPublisher;
 
     @Transactional
     public Pedido create(Pedido pedido) {
@@ -56,10 +65,21 @@ public class PedidoService {
 
         Pedido pedido = pedidoEncontrado.get();
 
-        pedido.setStatus(status ? StatusPedido.PAGO : StatusPedido.ERRO_PAGAMENTO);
-        pedido.setObservacoes(observacoes);
+        if (status) {
+            prepararEpublicarPedidoPago(pedido);
+        } else {
+            pedido.setStatus(StatusPedido.ERRO_PAGAMENTO);
+        }
 
+        pedido.setObservacoes(observacoes);
         pedidoRepository.save(pedido);
+    }
+
+    private void prepararEpublicarPedidoPago(Pedido pedido) {
+        pedido.setStatus(StatusPedido.PAGO);
+        carregarDadosCliente(pedido);
+        carregarItensPedido(pedido);
+        pagamentoPublisher.publicar(pedido);
     }
 
     public Optional<Pedido> findById(Long codigo) {
@@ -89,6 +109,31 @@ public class PedidoService {
         String novaChavePagamento = servicoBancarioClient.solicitarPagamento(pedido);
         pedido.setChavePagamento(novaChavePagamento);
         pedidoRepository.save(pedido);
+    }
+
+    public Optional<Pedido> carregarDadosCompletosPedido(Long codigo) {
+        Optional<Pedido> pedido = pedidoRepository.findById(codigo);
+        pedido.ifPresent(this::carregarDadosCliente);
+        pedido.ifPresent(this::carregarItensPedido);
+        return pedido;
+    }
+
+    private void carregarDadosCliente(Pedido pedido) {
+        Long codigoCliente = pedido.getCodigoCliente();
+        var response = apiClientes.getCliente(codigoCliente);
+        pedido.setClienteRepresentation(response.getBody());
+    }
+
+    private void carregarItensPedido(Pedido pedido) {
+        List<ItemPedido> itens = itemPedidoRepository.findByPedido(pedido);
+        pedido.setItemPedidoList(itens);
+        pedido.getItemPedidoList().forEach(this::carregarDadosProduto);
+    }
+
+    private void carregarDadosProduto(ItemPedido itemPedido) {
+        Long codigoProduto = itemPedido.getCodigoProduto();
+        var response = apiProdutos.getProduto(codigoProduto);
+        itemPedido.setNome(response.getBody().nome());
     }
 
 
