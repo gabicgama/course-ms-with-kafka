@@ -1,9 +1,8 @@
-package io.github.cursodsousa.icompras.faturamento;
+package io.github.cursodsousa.icompras.faturamento.service;
 
 import io.github.cursodsousa.icompras.faturamento.bucket.BucketFile;
 import io.github.cursodsousa.icompras.faturamento.bucket.BucketService;
 import io.github.cursodsousa.icompras.faturamento.model.Pedido;
-import io.github.cursodsousa.icompras.faturamento.service.NotaFiscalService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
