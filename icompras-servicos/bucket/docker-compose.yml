@@ -1,0 +1,16 @@
+services:
+  rustfs:
+    image: rustfs/rustfs:latest
+    container_name: rustfs
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      RUSTFS_ACCESS_KEY: minioadmin
+      RUSTFS_SECRET_KEY: minioadmin
+    volumes:
+      - rustfs_data:/data
+    command: /data
+
+volumes:
+  rustfs_data:
