@@ -23,7 +23,7 @@ public class PedidoPagoSubscriber {
     public void listen(String json) {
 
         try {
-            log.info("Recebendo pedido para faturemento: {}", json);
+            log.info("Recebendo pedido para faturamento: {}", json);
             var representation = mapper.readValue(json, DetalhePedidoRepresentation.class);
             Pedido pedido = pedidoMapper.map(representation);
             service.gerar(pedido);

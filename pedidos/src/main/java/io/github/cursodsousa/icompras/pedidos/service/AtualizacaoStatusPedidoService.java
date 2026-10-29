@@ -16,9 +16,15 @@ public class AtualizacaoStatusPedidoService {
     public void atualizarStatus(Long codigo, StatusPedido status, String urlNf, String rastreio) {
 
         pedidoRepository.findById(codigo).ifPresent(pedido -> {
-            pedido.setStatus(status);
-            pedido.setUrlNf(urlNf);
-            pedido.setCodigoRastreio(rastreio);
+            if (status != null) {
+                pedido.setStatus(status);
+            }
+            if (urlNf != null) {
+                pedido.setUrlNf(urlNf);
+            }
+            if (rastreio != null) {
+                pedido.setCodigoRastreio(rastreio);
+            }
         });
     }
 }
