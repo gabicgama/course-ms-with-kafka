@@ -14,10 +14,17 @@ public class ProdutoService {
     private final ProdutoRepository produtoRepository;
 
     public Produto save(Produto produto) {
+
         return produtoRepository.save(produto);
     }
 
     public Optional<Produto> findById(Long codigo) {
+
         return produtoRepository.findById(codigo);
+    }
+
+    public void deletar(Produto produto) {
+        produto.setAtivo(false);
+        produtoRepository.save(produto);
     }
 }
