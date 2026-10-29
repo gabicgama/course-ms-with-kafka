@@ -6,7 +6,6 @@ import io.github.cursodsousa.icompras.pedidos.controller.mappers.PedidoMapper;
 import io.github.cursodsousa.icompras.pedidos.exceptions.ItemNaoEncontradoException;
 import io.github.cursodsousa.icompras.pedidos.exceptions.ValidatorException;
 import io.github.cursodsousa.icompras.pedidos.model.ErroResposta;
-import io.github.cursodsousa.icompras.pedidos.model.Pedido;
 import io.github.cursodsousa.icompras.pedidos.publisher.DetalhePedidoMapper;
 import io.github.cursodsousa.icompras.pedidos.publisher.representation.DetalhePedidoRepresentation;
 import io.github.cursodsousa.icompras.pedidos.service.PedidoService;
@@ -36,12 +35,6 @@ public class PedidoController {
             return ResponseEntity.badRequest().body(erro);
         }
     }
-
-//    @GetMapping("/{codigo}")
-//    public ResponseEntity<Optional<Pedido>> getPedido(@PathVariable("codigo") Long codigo) {
-//        Optional<Pedido> pedido = pedidoService.findById(codigo);
-//        return ResponseEntity.ok().body(pedido);
-//    }
 
     @PostMapping("/pagamentos")
     public ResponseEntity<Object> adicionarNovoPagamento(@RequestBody AdicaoNovoPagamentoDTO dto) {
